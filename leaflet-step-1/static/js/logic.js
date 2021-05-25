@@ -11,15 +11,21 @@ d3.json(url).then(function(data) {
   for (var i = 0; i<locations.length; i++) {
     var earthquake = locations[i];
     // coord.push([earthquake.geometry.coordinates[1],earthquake.geometry.coordinates[0]])
-    var earthquakeMarker = L.marker([earthquake.geometry.coordinates[1],earthquake.geometry.coordinates[0]]).bindPopup("Heading");
+    var earthquakeMarker = L.circle([earthquake.geometry.coordinates[1],earthquake.geometry.coordinates[0]],{
+      color: getFillColor(earthquake.geometry.coordinates[2]),
+      fillColor: getFillColor(earthquake.geometry.coordinates[2]),
+      fillOpacity: .5,
+      radius: 5000 * earthquake.properties.mag
+    }).bindPopup(`<h3>${earthquake.properties.place}<h3><h3>Magnitude: ${earthquake.properties.mag}<h3><h3>Depth: ${earthquake.geometry.coordinates[2]}<h3>`);;
     earthquakeMarkers.push(earthquakeMarker);
   };
 
   mapCreate(L.layerGroup(earthquakeMarkers))
+  
 
 });
 
-function mapCreate(markers) {
+function mapCreate(earthquakeMarkers) {
 
   // Adding tile layer
   var street = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
@@ -29,14 +35,14 @@ function mapCreate(markers) {
     zoomOffset: -1,
     id: "mapbox/streets-v11",
     accessToken: API_KEY
-  }).addTo(myMap);
+  });
 
   var baseMaps = {
     "Street": street
   };
 
   var overLayMaps = {
-    "Earthquakes": markers
+    "Earthquakes": earthquakeMarkers
   };
 
   var myMap = L.map("map", {
@@ -51,4 +57,16 @@ function mapCreate(markers) {
 
 
 
+}
+
+function getFillColor(depth) {
+  if (depth < 1) {
+    color = "green";
+  } else if (depth >=1 & depth < 2) {
+    color = "yellow";
+  } else {
+    color = "red";
+  }
+
+  return color
 }
