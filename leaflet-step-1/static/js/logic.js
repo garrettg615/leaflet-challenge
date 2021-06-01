@@ -14,13 +14,13 @@ d3.json(url).then(function(data) {
     var earthquakeMarker = L.circle([earthquake.geometry.coordinates[1],earthquake.geometry.coordinates[0]],{
       color: getFillColor(earthquake.geometry.coordinates[2]),
       fillColor: getFillColor(earthquake.geometry.coordinates[2]),
-      fillOpacity: .5,
-      radius: 5000 * earthquake.properties.mag
+      fillOpacity: .8,
+      radius: 10000 * earthquake.properties.mag
     }).bindPopup(`<h3>${earthquake.properties.place}<h3><h3>Magnitude: ${earthquake.properties.mag}<h3><h3>Depth: ${earthquake.geometry.coordinates[2]}<h3>`);;
     earthquakeMarkers.push(earthquakeMarker);
   };
 
-  mapCreate(L.layerGroup(earthquakeMarkers))
+  mapCreate(L.layerGroup(earthquakeMarkers));
   
 
 });
@@ -55,18 +55,49 @@ function mapCreate(earthquakeMarkers) {
     collapsed: false
   }).addTo(myMap);
 
+  // map legend
+  var legend = L.control({ 
+    position: "bottomright" 
+  });
 
+  legend.onAdd = function() {
+    var div = L.DomUtil.create("div", "legend");
+    var bins = ["< 10", "10 - 29", "30 - 49", "50 - 69", "70 - 90", "> 90"]
+    var colors = ["#1a9850", "#d9ef8b", "#fed976", "#fd8d3c", "#f03b20", "#bd0026"];
+    var labels = [];   
+    
+
+    labels.push(`<p style=background-color:lightgrey>Depth of Quake</p>`);
+    for (var i = 0; i<bins.length; i++) {
+      labels.push(`<ul style=background-color:${colors[i]}>${bins[i]}</ul>`);
+    };
+    
+    div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+    
+    return div;
+  };
+
+  legend.addTo(myMap);
 
 }
 
 function getFillColor(depth) {
-  if (depth < 1) {
-    color = "green";
-  } else if (depth >=1 & depth < 2) {
-    color = "yellow";
+  if (depth < 10) {
+    color = "#1a9850";
+  } else if (depth >=10 & depth < 30) {
+    color = "#d9ef8b";
+  } else if (depth >=30 & depth < 50) {
+    color = "#fed976";
+  } else if (depth >=50 & depth < 70) {
+    color = "#fd8d3c";
+  } else if (depth >=70 & depth < 90) {
+    color = "#f03b20";
   } else {
-    color = "red";
+    color = "#bd0026";
   }
 
   return color
-}
+};
+
+
+  
