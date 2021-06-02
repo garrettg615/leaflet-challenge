@@ -15,7 +15,7 @@ d3.json(url).then(function(data) {
       color: getFillColor(earthquake.geometry.coordinates[2]),
       fillColor: getFillColor(earthquake.geometry.coordinates[2]),
       fillOpacity: .8,
-      radius: 10000 * earthquake.properties.mag
+      radius: 30000 * earthquake.properties.mag
     }).bindPopup(`<h3>${earthquake.properties.place}<h3><h3>Magnitude: ${earthquake.properties.mag}<h3><h3>Depth: ${earthquake.geometry.coordinates[2]}<h3>`);;
     earthquakeMarkers.push(earthquakeMarker);
   };
@@ -55,8 +55,29 @@ function mapCreate(earthquakeMarkers, tectPlates) {
     accessToken: API_KEY
   });
 
+  var satellite = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+    tileSize: 512,
+    maxZoom: 18,
+    zoomOffset: -1,
+    id: "mapbox/satellite-v9",
+    accessToken: API_KEY
+  });
+
+  var nightMode = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+    tileSize: 512,
+    maxZoom: 18,
+    zoomOffset: -1,
+    id: "mapbox/navigation-night-v1",
+    accessToken: API_KEY
+  });
+
   var baseMaps = {
-    "Street": street
+    "Street": street,
+    "Night Mode": nightMode,
+    "Satellite": satellite
+    
   };
 
   var overLayMaps = {
@@ -65,8 +86,8 @@ function mapCreate(earthquakeMarkers, tectPlates) {
   };
 
   var myMap = L.map("map", {
-    center: [39.8283, -98.5795],
-    zoom: 5,
+    center: [14.5994, -28.6731],
+    zoom: 3.2,
     layers: [street]
   });
 
